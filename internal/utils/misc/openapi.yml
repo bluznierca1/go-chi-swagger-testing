@@ -1,0 +1,40 @@
+openapi: 3.0.3
+info:
+  title: Go Chi Swagger Testing
+  description: |-
+    Sample OpenApi yml config file presenting one way of testing application against definitions in that file.
+  contact:
+    email: grzegorz.lasak@grzegorzlasak.com
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://to-be-defined.whoknows
+    description: Your server - to be defined.
+paths:
+  /api/ping:
+    get:
+      description: Our GET Ping endpoint
+      tags:
+        - PING
+      operationId: getPing
+      responses:
+        '200':
+          description: Our GET Ping response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ping:
+                    type: string
+                    example: pong
+                    nullable: false
+        '500':
+            $ref: '#/components/responses/500'
+
+components:
+  responses:
+    '500':
+      description: Unexpected Server Error
