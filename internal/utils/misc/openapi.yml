@@ -10,7 +10,9 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://to-be-defined.whoknows
+  # !!! KEEP IN MIND TO UPDATE IT TO YOUR DOMAIN OR TO DELETE IT !!!
+  # When using servers.url, you need to include full URL in the tests when building requests
+  - url: https://to-be-defined.whoknows 
     description: Your server - to be defined.
 paths:
   /api/ping:

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -44,6 +45,9 @@ type OpenApiTestRequestData struct {
 
 	// Your Handler code to mock endpoint's behaviour
 	HandlerCallback func(w http.ResponseWriter, r *http.Request)
+
+	// String that is expected to appear in response. Empty string skips check
+	ExpectedBodySubstring string
 }
 
 // LoadOpenApiYmlFile load OpenApi yaml/json file
@@ -136,20 +140,20 @@ func NewOpenApiRouter(openApiDoc *openapi3.T) (routers.Router, error) {
 //
 // - error: in case something fails. You can use it to fail test
 func OpenApiTestRequest(testData OpenApiTestRequestData) error {
-	// extract context from provided httpReq
+	// extract context from provided httpReq and attach timeout
 	reqContext, cancel := context.WithTimeout(testData.HttpReq.Context(), 10*time.Second)
 	defer cancel()
 
 	// get new instance of router for a document
 	router, err := NewOpenApiRouter(testData.OpenApiDoc)
 	if err != nil {
-		return fmt.Errorf("failed to create router: %v", err)
+		return fmt.Errorf("NewOpenApiRouter(); err = %v", err)
 	}
 
 	// find route in schema or fail
 	route, pathParams, err := router.FindRoute(testData.HttpReq)
 	if err != nil {
-		return fmt.Errorf("finding route err: %v", err)
+		return fmt.Errorf("router.FindRoute(); err = %v", err)
 	}
 
 	// build request validation input for validation against schema
@@ -165,7 +169,7 @@ func OpenApiTestRequest(testData OpenApiTestRequestData) error {
 	// if you need to skip some pieces, add it into Options
 	err = openapi3filter.ValidateRequest(reqContext, requestValidationInput)
 	if err != nil {
-		return fmt.Errorf("request validation error: %v", err)
+		return fmt.Errorf("openapi3filter.ValidateRequest(); err = %v", err)
 	}
 
 	// create response recorded to cast response from mocked request
@@ -190,8 +194,16 @@ func OpenApiTestRequest(testData OpenApiTestRequestData) error {
 	responseValidationInput.SetBodyBytes(responseRecorder.Body.Bytes())
 	err = openapi3filter.ValidateResponse(reqContext, responseValidationInput)
 	if err != nil {
-		return fmt.Errorf("error on validation: %v", err)
+		return fmt.Errorf("openapi3filter.ValidateResponse(); err = %v", err)
 	}
+
+	// validate expected substring is in response body
+	if testData.ExpectedBodySubstring != "" {
+		if !strings.Contains(string(responseRecorder.Body.Bytes()), testData.ExpectedBodySubstring) {
+			return fmt.Errorf("strings.Contains testData.ExpectedBodySubstring? FALSE")
+		}
+	}
+
 	// end::validate response against OpenApi Schema
 
 	return nil
