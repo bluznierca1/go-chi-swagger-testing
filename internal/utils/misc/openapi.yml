@@ -31,10 +31,34 @@ paths:
                     type: string
                     example: pong
                     nullable: false
+  /api/not-found:
+    get:
+      description: Our 404 Not Found response endpoint
+      tags:
+        - PING
+      operationId: notFoundPing
+      responses:
+        '404':
+          description: Our GET Not Found Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: err_not_found
+                    nullable: false
+                  error_msg:
+                    type: string
+                    example: Entity not found.
+                    nullable: false
+  /api/internal-server-error:
+    post:
+      description: Our 500 Internal Server Error response endpoint
+      tags:
+        - PING
+      operationId: internalServerErrorPing
+      responses:
         '500':
-            $ref: '#/components/responses/500'
-
-components:
-  responses:
-    '500':
-      description: Unexpected Server Error
+          description: Our POST Internal Server Error Response
