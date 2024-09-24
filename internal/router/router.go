@@ -13,8 +13,7 @@ func SetupRouter() *chi.Mux {
 	// Let's group below routes under /api
 	router.Route("/api", func(r chi.Router) {
 		r.Get("/ping", apiHandlers.Ping.Ping)
-		r.Get("/not-found", apiHandlers.Ping.NotFoundError)
-		r.Post("/internal-server-error", apiHandlers.Ping.InternalServerError)
+		r.Get("/get-record/{id}", apiHandlers.Ping.GetRecord)
 	})
 
 	return router

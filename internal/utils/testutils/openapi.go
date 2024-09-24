@@ -200,7 +200,8 @@ func OpenApiTestRequest(testData OpenApiTestRequestData) error {
 	// validate expected substring is in response body
 	if testData.ExpectedBodySubstring != "" {
 		if !strings.Contains(string(responseRecorder.Body.Bytes()), testData.ExpectedBodySubstring) {
-			return fmt.Errorf("strings.Contains testData.ExpectedBodySubstring? FALSE")
+			return fmt.Errorf("testData.ExpectedBodySubstring not found. Want: [%s] | Got: %s",
+				testData.ExpectedBodySubstring, string(responseRecorder.Body.Bytes()))
 		}
 	}
 

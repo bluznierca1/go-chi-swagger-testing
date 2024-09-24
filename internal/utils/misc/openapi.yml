@@ -33,13 +33,33 @@ paths:
                     type: string
                     example: pong
                     nullable: false
-  /api/not-found:
+  /api/get-record/{id}:
     get:
       description: Our 404 Not Found response endpoint
       tags:
         - PING
       operationId: notFoundPing
+      parameters:
+        - in: path
+          name: id
+          required: true
+          example: 12
+          description: entity ID
+          schema:
+            type: integer
+            format: uint64
       responses:
+        '200':
+          description: Our GET When record fount (id 5)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 5
+                    nullable: false
         '404':
           description: Our GET Not Found Response
           content:
@@ -55,12 +75,18 @@ paths:
                     type: string
                     example: Entity not found.
                     nullable: false
-  /api/internal-server-error:
-    post:
-      description: Our 500 Internal Server Error response endpoint
-      tags:
-        - PING
-      operationId: internalServerErrorPing
-      responses:
-        '500':
-          description: Our POST Internal Server Error Response
+        '422':
+          description: Invalid id param - Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: err_invalid_id
+                    nullable: false
+                  error_msg:
+                    type: string
+                    example: Id must be integer greater than 0..
+                    nullable: false
