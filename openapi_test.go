@@ -1,3 +1,4 @@
+// {root}/openapi_test.go
 package main
 
 import (
@@ -14,22 +15,24 @@ var (
 	openApiDoc *openapi3.T
 )
 
-// Load environment and database connection once per test run
+// Load OpenAPI file via package once (it will crash if something goes wrong)
 func TestMain(m *testing.M) {
 	openApiDoc = testutils.LoadOpenApiConfigFile()
 	m.Run()
 }
 
-// TestOpenApi_CheckRegisteredRoutes tests the alignment between OpenAPI documentation and Chi router.
+// TestOpenApi_CheckRegisteredRoutes tests the alignment between
+// OpenAPI documentation and Chi router.
 func TestOpenApi_CheckRegisteredRoutes(t *testing.T) {
-	// Extract paths from OpenAPI documentation
+	// Extract paths and their methods from OpenAPI documentation
+	// it will be obtained in our own format (wrapper)
 	openApiPaths := testutils.GetOpenApiPathsData(openApiDoc)
 
-	// Initialize Chi router and extract its paths
+	// Initialize Chi router and extract its paths with methods
 	router := apiRouter.SetupRouter()
 	routerPaths, err := testutils.GetRouterPathsData(router)
 	if err != nil {
-		t.Fatalf("Error building paths for router: %v", err)
+		t.Fatalf("testutils.GetRouterPathsData(); err = %v", err)
 	}
 
 	// Slice to collect discrepancies
@@ -41,7 +44,7 @@ func TestOpenApi_CheckRegisteredRoutes(t *testing.T) {
 	// Preprocess Router methods into a map
 	routerMethodsMap := preprocessRouterMethods(routerPaths)
 
-	// Check OpenAPI to Router
+	// begin::Check OpenAPI to Router
 	for path, openApiPathDetails := range openApiPaths {
 		_, exists := routerPaths[path]
 		if !exists {
@@ -58,8 +61,9 @@ func TestOpenApi_CheckRegisteredRoutes(t *testing.T) {
 			}
 		}
 	}
+	// end::Check OpenAPI to Router
 
-	// Check Router to OpenAPI
+	// begin::Check Router to OpenAPI
 	for path, routerPathDetails := range routerPaths {
 		_, exists := openApiPaths[path]
 		if !exists {
@@ -73,14 +77,15 @@ func TestOpenApi_CheckRegisteredRoutes(t *testing.T) {
 			}
 		}
 	}
+	// end::Check Router to OpenAPI
 
-	// Report all discrepancies at once
+	// Report all discrepancies
 	if len(discrepancies) > 0 {
 		t.Errorf("Route discrepancies found:\n%s", strings.Join(discrepancies, "\n"))
 	}
 }
 
-// preprocessOpenApiMethods converts OpenAPI path details into a map for efficient method lookup
+// preprocessOpenApiMethods converts OpenAPI path details into a map for easier usage
 func preprocessOpenApiMethods(paths map[string][]testutils.OpenApiPathDetails) map[string]map[string]bool {
 	methodsMap := make(map[string]map[string]bool)
 	for path, details := range paths {
@@ -96,7 +101,7 @@ func preprocessOpenApiMethods(paths map[string][]testutils.OpenApiPathDetails) m
 	return methodsMap
 }
 
-// preprocessRouterMethods converts Router path details into a map for efficient method lookup
+// preprocessRouterMethods converts Router path details into a map for easier usage
 func preprocessRouterMethods(paths map[string][]testutils.RouterPathDetails) map[string]map[string]bool {
 	methodsMap := make(map[string]map[string]bool)
 	for path, details := range paths {
