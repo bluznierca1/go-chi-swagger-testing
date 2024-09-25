@@ -10,9 +10,12 @@ import (
 	"time"
 
 	"github.com/bluznierca1/go-chi-swagger-testing/internal/router"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// init our .env file
+	initializeDotEnv()
 
 	// Init our router
 	router := router.SetupRouter()
@@ -33,6 +36,12 @@ func main() {
 
 	gracefulShutdown(srv)
 
+}
+
+func initializeDotEnv() {
+	if err := godotenv.Load("../../.env"); err != nil {
+		log.Fatalf("Could not initialize .env file %v", err)
+	}
 }
 
 // gracefulShutdown makes sure that for 5 seconds server will maintain ongoing processes

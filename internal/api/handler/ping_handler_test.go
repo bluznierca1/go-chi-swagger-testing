@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -17,6 +19,10 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	if err := godotenv.Load("../../../.env"); err != nil {
+		log.Fatalf("Could not initialize .env file %v", err)
+	}
+
 	openApiDoc = testutils.LoadOpenApiConfigFile()
 
 	m.Run()

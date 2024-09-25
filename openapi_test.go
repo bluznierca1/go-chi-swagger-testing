@@ -3,12 +3,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"testing"
 
 	apiRouter "github.com/bluznierca1/go-chi-swagger-testing/internal/router"
 	"github.com/bluznierca1/go-chi-swagger-testing/internal/utils/testutils"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -17,6 +19,11 @@ var (
 
 // Load OpenAPI file via package once (it will crash if something goes wrong)
 func TestMain(m *testing.M) {
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Could not initialize .env file %v", err)
+	}
+
 	openApiDoc = testutils.LoadOpenApiConfigFile()
 	m.Run()
 }

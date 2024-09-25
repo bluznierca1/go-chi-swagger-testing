@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"time"
 
@@ -57,7 +58,7 @@ func LoadOpenApiConfigFile() *openapi3.T {
 	loader := openapi3.NewLoader()
 
 	// I recommend updating it to absolute path with ENV vars...
-	doc, err := loader.LoadFromFile("{YOUR_ABSOLUTE_PATH_GOES_HERE}")
+	doc, err := loader.LoadFromFile(os.Getenv("OPEN_API_CONFIG_FILE_PATH"))
 	if err != nil {
 		log.Fatalf("Failed load swagger spec: %v", err)
 	}
