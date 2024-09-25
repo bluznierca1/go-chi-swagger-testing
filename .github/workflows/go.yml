@@ -28,9 +28,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "OPEN_API_CONFIG_FILE_PATH=${{ secrets.OPEN_API_CONFIG_FILE_PATH }}" >> .env
+          echo "OPEN_API_CONFIG_FILE_PATH=${GITHUB_WORKSPACE}/${{ secrets.OPEN_API_CONFIG_FILE_PATH }}" >> .env
 
       - name: Run tests
         run: go test ./... -v -race
-        env:
-          MY_SECRET: ${{ vars.OPEN_API_CONFIG_FILE_PATH }}
