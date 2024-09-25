@@ -14,7 +14,7 @@ type PingHandler struct{}
 func (p *PingHandler) Ping(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "application/json")
-	w.Write([]byte("{\"ping\":\"pong\"}"))
+	w.Write([]byte(`{"ping":"pong"}`))
 }
 
 func (p *PingHandler) GetRecord(w http.ResponseWriter, r *http.Request) {
